@@ -2,6 +2,8 @@
 #define CONTROL_H
 
 #include "state_machine.h"
+#include "mbed-scope/scope.h"
+#include "mpu6050/MPU6050.h"
 
 /**
  * Main state machine class of this program
@@ -10,10 +12,10 @@ class Control : public StateMachine {
 
 public:
     enum State {
-        IMU = 0,
-        IMU_IDLE,
+        INIT = 0,
+        IMU,
         EMG,
-        EMG_IDLE
+        IDLE,
     };
 
     /**
@@ -26,14 +28,39 @@ public:
      */
     void run_state() override;
 
+    /**
+     * Return the chrono duration of a loop
+     *
+     * Based on internal framerate
+     */
+    const std::chrono::duration<float>& getLooptime() const;
+
 private:
 
+    void state_init();
     void state_imu();
-    void state_imu_idle();
     void state_emg();
-    void state_emg_idle();
+    void state_idle();
 
-    DigitalIn button1; /// State toggle button
+    /**
+     * Set looptime based on frequency
+     */
+    void setLooptime(float fs);
+
+    /**
+     * Return alternating true and false, based on state time
+     *
+     * @param dt Period of blink frequency
+     */
+    bool blink(int dt) const;
+
+    std::chrono::duration<float> looptime;
+
+    DigitalIn sw2, sw3; /// Buttons
+    DigitalOut led_green, led_red, led_blue; /// LEDs
+
+    Scope* scope; /// Pointer to scope
+    MPU6050* mpu; /// Pointer to MPU
 
 };
 

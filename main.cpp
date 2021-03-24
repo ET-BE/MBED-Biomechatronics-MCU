@@ -9,18 +9,14 @@ int main()
 
     Control machine;
 
-    //using namespace std::chrono;
-    //using Framerate = duration<steady_clock::rep, std::ratio<1, 10>>;
-    //auto next = Kernel::Clock::now() + Framerate{1};
-
+    using namespace std::chrono;
 
     while (true) {
 
         machine.run();
 
-        //while (Kernel::Clock::now() < next) {}
-        //next += Framerate{1};
+        auto next = Kernel::Clock::now() + machine.getLooptime();
 
-        ThisThread::sleep_for(100ms);
+        while (Kernel::Clock::now() < next) {}
     }
 }

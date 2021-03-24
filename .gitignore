@@ -6,3 +6,5 @@ projectfiles
 mbed-os
 BUILD
 
+mpu6050
+mbed-scope
