@@ -24,6 +24,11 @@ public:
     Control();
 
     /**
+     * Destructor
+     */
+    ~Control();
+
+    /**
      * Choose the right state function based on current state
      */
     void run_state() override;
@@ -58,9 +63,12 @@ private:
 
     DigitalIn sw2, sw3; /// Buttons
     DigitalOut led_green, led_red, led_blue; /// LEDs
+    AnalogIn a0, a1; /// AnalogIn pins
 
-    Scope* scope; /// Pointer to scope
-    MPU6050* mpu; /// Pointer to MPU
+    // Use pointer to allow delayed creation:
+    Scope* scope;
+    I2C* i2c;
+    MPU6050* imu;
 
 };
 

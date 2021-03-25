@@ -1,22 +1,25 @@
 #include "mbed.h"
 #include "states/control.h"
 
-const float fs = 10.0f;
+using namespace std::chrono;
+
+Timer t;
 
 int main()
 {
     printf("Starting...\n\r");
 
-    Control machine;
+    t.start();
 
-    using namespace std::chrono;
+    Control machine;
 
     while (true) {
 
+        auto next = t.elapsed_time() + machine.getLooptime();
+
         machine.run();
 
-        auto next = Kernel::Clock::now() + machine.getLooptime();
-
-        while (Kernel::Clock::now() < next) {}
+        // Busy wait untill the looptime (including execution) has passed
+        while (t.elapsed_time() < next) {}
     }
 }
