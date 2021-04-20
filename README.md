@@ -29,3 +29,13 @@ If no USB is connected, the program will wait after the mode selection, showing 
 **After selecting IMU mode with the USB connected, the board jumps to passive mode (red blinking led)**
 
  * The expected signature was not received from the IMU sensor. Make sure the sensor is connected properly.
+
+## Compile
+
+You can compile the program for the MBED controller using MBED Studio.
+
+## Update Firmware
+
+To update the firmware on your board either, either installed MBED Studio and compile and write the software, or download a precompiled image and write it the MCU.
+
+To install a precompiled image, download an image from the releases section. Then connect your MUC to your computer using the "SDA USB" port. The device will appear in your file browser as removable storage named "DAPLINK". Now simply copy or move the *.bin file unto the device and wait for any blinking to stop. Then click the "Reset" button or reconnect it entirely.
