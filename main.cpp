@@ -7,8 +7,6 @@ Timer t;
 
 int main()
 {
-    printf("Starting...\n\r");
-
     t.start();
 
     Control machine;

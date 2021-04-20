@@ -67,8 +67,6 @@ private:
 
     // Use pointer to allow delayed creation:
     Scope* scope;
-    I2C* i2c;
-    MPU6050* imu;
 
 };
 

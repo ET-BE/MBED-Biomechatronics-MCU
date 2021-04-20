@@ -17,12 +17,6 @@ Control::~Control() {
     if (scope) {
         delete scope;
     }
-    if (imu) {
-        delete imu;
-    }
-    if (i2c) {
-        delete i2c;
-    }
 }
 
 // State selection
@@ -63,8 +57,6 @@ void Control::state_init() {
 
     if (isInit()) {
 
-        printf("State: INIT\n\r");
-
         button1 = button2 = 0;
         led_green = led_red = 1; // Off
     }
@@ -99,53 +91,52 @@ void Control::state_init() {
 
 void Control::state_imu() {
 
-    if (isInit()) {
+    static I2C i2c(I2C_SDA, I2C_SCL);
+    static MPU6050 imu(&i2c);
 
-        printf("State: IMU\n\r");
+    if (isInit()) {
 
         setLooptime(250.0f);
 
         led_red = led_blue = 1;
         led_green = 0;
 
+        i2c.frequency(400000); // 400 kHz
+
         scope = new Scope(6); // Create scope instance
         // Constructor will hang untill USB connection is made
 
-        // Set-up MPU sensor:
-        i2c = new I2C(I2C_SDA, I2C_SCL);
-        i2c->frequency(400000); // 400 kHz
-        imu = new MPU6050(i2c);
-
-        const uint8_t whoami = imu->readByte(WHO_AM_I_MPU6050);
-
+        const uint8_t whoami = imu.readByte(WHO_AM_I_MPU6050);
         if (whoami != 0x68) {
-            printf("Invalid device!\n\r");
             setState(IDLE);
             return; // Abort current state
         }
 
-        imu->setAScale(AFS_16G);
-        imu->setGScale(GFS_2000DPS);
+        imu.setAScale(AFS_16G);
+        imu.setGScale(GFS_2000DPS);
 
-        imu->reset();  // Reset registers to default
-        imu->init();
+        imu.reset();  // Reset registers to default
+        imu.init();
+        imu.calibrate_basic(250); // Do internal calibration
 
         led_red = led_blue = 0;
         led_green = 1;
+
+        ThisThread::sleep_for(100ms); // Make sure program is caught up
     }
 
     // Create destination variables (static in case imu fails for one loop)
     static float a[3] = {0.0f}, g[3] = {0.0f}, temp = 0.0f;
 
-    scope->set(0, a, 3);
-    scope->set(3, g, 3);
-
     // Check if data is ready
-    if (imu->readByte(INT_STATUS) & 0x01) {
-        imu->readData(a, g, &temp);
+    const uint8_t is_ready = imu.readByte(INT_STATUS) & 0x01;
+    if (is_ready) {
+
+        imu.readData(a, g, &temp);
 
         scope->set(0, a, 3);
         scope->set(3, g, 3);
+
     }
 
     scope->send();
@@ -156,8 +147,6 @@ void Control::state_imu() {
 void Control::state_emg() {
 
     if (isInit()) {
-
-        printf("State: EMG\n\r");
 
         setLooptime(750.0f);
 
@@ -173,6 +162,8 @@ void Control::state_emg() {
 
     scope->set(0, a0.read());
     scope->set(1, a1.read());
+    //scope->set(0, 1 - sw2.read());
+    //scope->set(1, 1 - sw3.read());
     scope->send();
 }
 
