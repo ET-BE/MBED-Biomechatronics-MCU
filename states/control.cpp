@@ -117,7 +117,8 @@ void Control::state_imu() {
 
         imu.reset();  // Reset registers to default
         imu.init();
-        imu.calibrate_basic(250); // Do internal calibration
+        // Skip calibration to keep in the gravity component
+        //imu.calibrate_basic(250); // Do internal calibration
 
         led_red = led_blue = 0;
         led_green = 1;
