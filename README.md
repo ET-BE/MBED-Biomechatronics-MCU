@@ -2,6 +2,9 @@
 
 K64F program for the Biomechatronics course.
 
+Use uScope (the HID version) to read IMU or EMG data: https://bitbucket.org/ctw-bw/uscope/src/hid/  
+You can also use the Biomechatronics Scope to use the live EMG data as model input: https://bitbucket.org/ctw-bw/biomechatronics-scope/
+
 ## How to use
 
  * Connect the board. The blue LED will start to blink, indicating it's waiting for user input.
